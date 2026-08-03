@@ -190,3 +190,29 @@ def write_manifest(chapters: list[Chapter], out_dir: Path) -> None:
         ]
     }
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
+
+# Main function(testing stage)
+def main(pdf_path: str) -> None:
+    OUTPUT_DIR.mkdir(exist_ok=True)
+
+    print(f"Extracting text from {pdf_path} ...")
+    text, toc, page_offsets = extract_text_and_toc(pdf_path)
+    text = clean_text(text)
+
+    chapters = split_into_chapters(text, toc, page_offsets)
+    print(f"Found {len(chapters)} chapter(s).")
+
+    client = texttospeech.TextToSpeechClient()
+    for chapter in chapters:
+        print(f"Synthesizing chapter {chapter.index}: {chapter.title!r} "
+              f"({len(chapter.text)} chars)")
+        synthesize_chapter(client, chapter, OUTPUT_DIR)
+    
+    write_manifest(chapters, OUTPUT_DIR)
+    print(f"Done. Outputs in {OUTPUT_DIR.resolve()}")
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python prototype_pipeline.py path/to/book.pdf")
+        sys.exit(1)
+    main(sys.argv[1])
