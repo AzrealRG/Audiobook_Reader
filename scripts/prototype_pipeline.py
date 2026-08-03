@@ -143,3 +143,20 @@ def _synthesize_with_retry(client: texttospeech.TextToSpeechClient, text:str) ->
         except Exception:
             if attempt == RETRY_ATTEMPTS - 1:
                 raise time.sleep(2 ** attempt)
+
+# Synthesize chapters
+def synthesize_chapter(client: texttospeech.TextToSpeechClient, chapter: Chapter, out_dir = Path) -> Path:
+    chunks = text_chunking(chapter.text)
+    chunk_dir = out_dir / f"{chapter.index:02d}_chunks"
+    chunk_dir.mkdir(parents=True, exists_ok=True)
+
+    chunk_paths = []
+    for i, chunk in enumerate(chunks):
+        chunk_path = chunk_dir / f"chunk_{i:03d}.mp3"
+        if not chunk_path.exists(): # cache hit -> skip re-synthesizing (saves cost + time on reruns)
+            audio = _synthesize_with_retry(client, chunk)
+            chunk_path.write_bytes(audio)
+        chunk_paths.append(chunk_path)
+    
+    output_path = out_dir / f"{chapter.index:02d}_{slugify(chapter.title)}.mp3"
+    return _concatenate_mp3s(chunk_paths, output_path)
