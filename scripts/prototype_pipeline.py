@@ -134,3 +134,12 @@ def synthesize_chunk(clien: texttospeech.TextToSpeechClient, text: str) -> bytes
     response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_cofig=audio_cofig)
 
     return response.audio_content
+
+# Synthesize with retry
+def _synthesize_with_retry(client: texttospeech.TextToSpeechClient, text:str) -> bytes:
+    for attempt in range(RETRY_ATTEMPTS):
+        try:
+            return synthesize_chunk(client, text)
+        except Exception:
+            if attempt == RETRY_ATTEMPTS - 1:
+                raise time.sleep(2 ** attempt)
