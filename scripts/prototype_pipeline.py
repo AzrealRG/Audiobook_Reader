@@ -125,3 +125,12 @@ def text_chunking(text:str, max_bytes: int = MAX_CHUNK_BYTES) -> list[str]:
     if current:
         chunks.append(current)
     return chunks
+
+# Synthesize chunk
+def synthesize_chunk(clien: texttospeech.TextToSpeechClient, text: str) -> bytes:
+    synthesis_input = texttospeech.Synthesisinput(text=text)
+    voice = texttospeech.VoiceSelectionParams(language_code=LANGUAGE_CODE, name=VOICE_NAME)
+    audio_cofig = texttospeech.AudioConfig(audio_encoding=AUDIO_ENCODING)
+    response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_cofig=audio_cofig)
+
+    return response.audio_content
