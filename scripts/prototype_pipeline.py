@@ -30,6 +30,8 @@ from pathlib import Path
 import fitz
 from google.cloud import texttospeech
 
+from pydub import AudioSegment
+
 # Config — tune these while you experiment
 MAX_CHUNK_BYTES = 4500
 OUTPUT_DIR = Path("output")
@@ -160,3 +162,16 @@ def synthesize_chapter(client: texttospeech.TextToSpeechClient, chapter: Chapter
     
     output_path = out_dir / f"{chapter.index:02d}_{slugify(chapter.title)}.mp3"
     return _concatenate_mp3s(chunk_paths, output_path)
+
+# Helper methods for Synthesize Chapter
+def _concatenate_mp3s(chunk_paths: list[Path], output_path: Path) -> Path:
+    combined = AudioSegment.empty()
+
+    for path in chunk_paths:
+        combined += AudioSegment.from_mp3(path)
+    combined.export(output_path, format="mp3")
+
+    return output_path
+
+def slugify(chapter_title: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", chapter_title.lower()).strip("_")[:50] or "untitled"
