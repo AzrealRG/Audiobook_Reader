@@ -175,3 +175,18 @@ def _concatenate_mp3s(chunk_paths: list[Path], output_path: Path) -> Path:
 
 def slugify(chapter_title: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", chapter_title.lower()).strip("_")[:50] or "untitled"
+
+# Manifest - frontends source of truth
+def write_manifest(chapters: list[Chapter], out_dir: Path) -> None:
+    manifest = {
+        "chapters": [
+            {
+                "index": c.index,
+                "title": c.title,
+                "audio_file": f"{c.index:02d}_{slugify(c.title)}.mp3",
+                "char_count": len(c.text)
+            }
+            for c in chapters
+        ]
+    }
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
