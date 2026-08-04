@@ -22,15 +22,17 @@ Run:
 
 import json
 import re
+import subprocess
 import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
 
 import fitz
+from dotenv import load_dotenv
 from google.cloud import texttospeech
 
-from pydub import AudioSegment
+load_dotenv()
 
 # Config — tune these while you experiment
 MAX_CHUNK_BYTES = 4500
@@ -165,12 +167,26 @@ def synthesize_chapter(client: texttospeech.TextToSpeechClient, chapter: Chapter
 
 # Helper methods for Synthesize Chapter
 def _concatenate_mp3s(chunk_paths: list[Path], output_path: Path) -> Path:
-    combined = AudioSegment.empty()
+    list_file = output_path.parent / f"_concat_list_{output_path.stem}.txt"
+    with open(list_file, "w") as f:
+        for path in chunk_paths:
+            f.write(f"file '{path.resolve()}'\n")
 
-    for path in chunk_paths:
-        combined += AudioSegment.from_mp3(path)
-    combined.export(output_path, format="mp3")
-
+    try: 
+        subprocess.run(
+            [
+                "ffmpeg", "-y",
+                "-f", "concat", "-safe", "0",
+                "-i", str(list_file),
+                "-c", "copy",
+                str(output_path)
+            ]
+        )
+    except subprocess.CalledProcessError as e:
+        print(e.stderr)
+        raise
+    finally: 
+        list_file.unlink()
     return output_path
 
 def slugify(chapter_title: str) -> str:
