@@ -96,33 +96,6 @@ The core document-processing and text-to-speech pipeline is currently being deve
        │ Audio Player │
        └──────────────┘
 ```
-
----
-
-## Project Structure
-
-```text
-Audiobook_Reader/
-│
-├── scripts/
-│   ├── prototype_pipeline.py
-│   ├── test_pipeline.py
-│   └── ...
-│
-├── credentials/
-│   └── gcp-tts-key.json        # Local only - never commit
-│
-├── test_pdfs/                  # Local testing files
-│
-├── .env                        # Local environment variables
-├── .env.example                # Example environment configuration
-├── .gitignore
-├── requirements.txt
-└── README.md
-```
-
----
-
 ## Pipeline
 
 ### 1. Document Input
@@ -257,7 +230,7 @@ The book's processed chunks can be stored and retrieved through a **RAG (Retriev
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/AzrealRG/Audiobook_Reader
 cd Audiobook_Reader
 ```
 
