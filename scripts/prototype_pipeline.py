@@ -39,7 +39,7 @@ MAX_CHUNK_BYTES = 4500
 OUTPUT_DIR = Path("output")
 VOICE_NAME = "en-US-Wavenet-C"
 LANGUAGE_CODE = "en-US"
-AUDIO_ENCODING = texttospeech.AudioEncodding.MP3
+AUDIO_ENCODING = texttospeech.AudioEncoding.MP3
 RETRY_ATTEMPTS = 3
 
 # Base chapter splitting recognition(subject to change later)
@@ -83,7 +83,7 @@ def _split_by_heuristic(text: str) -> list[Chapter]:
     chapters = []
     for i, match in enumerate(matches):
         start = match.start()
-        end = matches[i + 1].start if i + 1 < len(matches) else len(text)
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
         
         chapters.append(Chapter(index = i + 1, title = match.group(0).strip(), text = text[start:end]))
     return chapters
@@ -132,10 +132,10 @@ def text_chunking(text:str, max_bytes: int = MAX_CHUNK_BYTES) -> list[str]:
 
 # Synthesize chunk
 def synthesize_chunk(client: texttospeech.TextToSpeechClient, text: str) -> bytes:
-    synthesis_input = texttospeech.Synthesisinput(text=text)
+    synthesis_input = texttospeech.SynthesisInput(text=text)
     voice = texttospeech.VoiceSelectionParams(language_code=LANGUAGE_CODE, name=VOICE_NAME)
-    audio_cofig = texttospeech.AudioConfig(audio_encoding=AUDIO_ENCODING)
-    response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_cofig=audio_cofig)
+    audio_config = texttospeech.AudioConfig(audio_encoding=AUDIO_ENCODING)
+    response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
 
     return response.audio_content
 
