@@ -1,0 +1,29 @@
+# --- Secrets & credentials — never commit these ---
+credentials/
+.env
+*.pem
+*.key
+ 
+# --- Python ---
+venv/
+__pycache__/
+*.pyc
+*.pyo
+ 
+# --- Generated audio output (large, binary, fully regenerable) ---
+scripts/output/
+server/output/
+ 
+# --- Node (for client/ once it becomes a real frontend) ---
+node_modules/
+.next/
+dist/
+ 
+# --- OS files ---
+.DS_Store
+Thumbs.db
+ 
+# --- Editor ---
+.vscode/
+.idea/
+EOF
