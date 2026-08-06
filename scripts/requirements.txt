@@ -1,3 +1,4 @@
 PyMuPDF
 google-cloud-texttospeech
+google-cloud-vision
 python-dotenv

@@ -13,7 +13,7 @@ from prototype_pipeline import (
 
 #tester methods
 def stage_extract(pdf_path: str) -> None:
-    text, toc, _offsets = extract_text_and_toc(pdf_path)
+    text, toc, _offsets, ocr_pages = extract_text_and_toc(pdf_path)
     text = clean_text(text)
 
     print(f"Extracted {len(text)} characters.")
