@@ -95,7 +95,7 @@ def extract_text_and_toc(pdf_path: str):
             page_text = ocr_page(page)
             ocr_pages.append(page_num)
         
-        full_text = page_text
+        full_text += page_text
     
     doc.close()
     return full_text, toc, page_char_offsets, ocr_pages
