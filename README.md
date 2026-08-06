@@ -118,7 +118,8 @@ Potential tools include:
 
 * PyMuPDF
 * pypdf
-* PaddleOCR
+* Google Cloud Vision
+* Pytesseract
 
 ### 3. Text Cleaning
 
@@ -211,17 +212,17 @@ The book's processed chunks can be stored and retrieved through a **RAG (Retriev
 
 ### Current / Planned
 
-| Component      | Technology                  |
-| -------------- | --------------------------- |
-| Language       | Python                      |
-| PDF Processing | PyMuPDF / pypdf             |
-| OCR            | PaddleOCR                   |
-| Text Chunking  | Custom / NLP-based          |
-| Text-to-Speech | Google Cloud Text-to-Speech |
-| AI / LLM       | TBD                         |
-| Retrieval      | Vector Database / RAG       |
-| Frontend       | TBD                         |
-| Backend        | TBD                         |
+| Component      | Technology                   |
+| -------------- | -----------------------------|
+| Language       | Python                       |
+| PDF Processing | PyMuPDF / pypdf              |
+| OCR            | Google Cloud Vision/Tesseract|
+| Text Chunking  | Custom / NLP-based           |
+| Text-to-Speech | Google Cloud Text-to-Speech  |
+| AI / LLM       | TBD                          |
+| Retrieval      | Vector Database / RAG        |
+| Frontend       | TBD                          |
+| Backend        | TBD                          |
 
 ---
 
@@ -298,8 +299,8 @@ For production, Google Cloud credentials should be managed through the backend/s
 * [x] Chapter detection
 * [x] Text chunking
 * [x] Basic TTS integration
-* [ ] Improve handling of difficult PDFs
-* [ ] Robust OCR pipeline
+* [x] Improve handling of difficult PDFs
+* [x] Robust OCR pipeline
 
 ### Phase 2 — AI Processing
 
