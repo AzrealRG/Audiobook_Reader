@@ -30,7 +30,7 @@ from pathlib import Path
 
 import fitz
 from dotenv import load_dotenv
-from google.cloud import texttospeech
+from google.cloud import texttospeech, vision
 
 load_dotenv()
 
@@ -54,6 +54,11 @@ class Chapter:
     text: str
 
 # Text Extraction
+
+MIN_CHARS_FOR_DIGITAL_TEXT = 20
+OCR_RENDER_DPI = 300
+
+_vision_client = None
 def extract_text_and_toc(pdf_path: str):
     doc = fitz.open(pdf_path)
     toc = doc.get_toc() # [[level, title, page_1_indexed], ...] — [] if no bookmarks
