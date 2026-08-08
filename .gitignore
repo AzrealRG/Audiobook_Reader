@@ -27,3 +27,11 @@ Thumbs.db
 .vscode/
 .idea/
 EOF
+
+# --- Storage ---
+storage/uploads/*
+storage/audio/*
+!storage/uploads/.gitkeep
+!storage/audio/.gitkeep
+
+output/
