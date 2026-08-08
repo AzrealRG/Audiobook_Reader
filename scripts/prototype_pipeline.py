@@ -179,13 +179,14 @@ def _synthesize_with_retry(client: texttospeech.TextToSpeechClient, text:str) ->
             return synthesize_chunk(client, text)
         except Exception:
             if attempt == RETRY_ATTEMPTS - 1:
-                raise time.sleep(2 ** attempt)
+                raise 
+            time.sleep(2 ** attempt)
 
 # Synthesize chapters
 def synthesize_chapter(client: texttospeech.TextToSpeechClient, chapter: Chapter, out_dir = Path) -> Path:
     chunks = text_chunking(chapter.text)
     chunk_dir = out_dir / f"{chapter.index:02d}_chunks"
-    chunk_dir.mkdir(parents=True, exists_ok=True)
+    chunk_dir.mkdir(parents=True, exist_ok=True)
 
     chunk_paths = []
     for i, chunk in enumerate(chunks):
@@ -245,7 +246,7 @@ def main(pdf_path: str) -> None:
     OUTPUT_DIR.mkdir(exist_ok=True)
 
     print(f"Extracting text from {pdf_path} ...")
-    text, toc, page_offsets = extract_text_and_toc(pdf_path)
+    text, toc, page_offsets, ocr_pages = extract_text_and_toc(pdf_path)
     text = clean_text(text)
 
     chapters = split_into_chapters(text, toc, page_offsets)
