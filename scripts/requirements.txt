@@ -2,3 +2,9 @@ PyMuPDF
 google-cloud-texttospeech
 google-cloud-vision
 python-dotenv
+python-multipart
+fastapi
+uvicorn[standard]
+celery
+redis
+pydantic-settings
