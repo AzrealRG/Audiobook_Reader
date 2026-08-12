@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 
 from server.workers.tasks import process_book
 from server.paths import get_book_dir, get_upload_path
-from server.schemas import UploadResponse, StautsResponse
+from server.schemas import UploadResponse, StatusResponse
 
 router = APIRouter(prefix="/books", tags=["books"])
 
@@ -24,4 +24,9 @@ async def upload_book(file: UploadFile):
     process_book.delay(book_id, str(pdf_path))
     return UploadResponse(book_id=book_id, status="queued")
 
-    
+@router.get(f"/{book_id}", response_model=StatusResponse)
+async def get_status(book_id: str):
+    status_file = get_book_dir(book_id) / "status.json"
+    if not status_file.exists():
+        raise HTTPException(404, "Book not found")
+    return json.loads(status_file.read_text())
