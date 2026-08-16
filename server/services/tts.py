@@ -5,7 +5,7 @@ from pathlib import Path
 
 from google.cloud import texttospeech
 
-from scripts.pipeline.chapters import Chapter, slugify
+from server.services.chapters import Chapter, slugify
 
 MAX_CHUNK_BYTES = 4500
 OUTPUT_DIR = Path("output")

@@ -14,7 +14,7 @@ def _get_vision_client():
         _vision_client = vision.ImageAnnotatorClient()
     return _vision_client
 
-def ocr_page(page: fitz.page) -> str:
+def ocr_page(page: "fitz.Page") -> str:
     pix = page.get_pixmap(dpi=OCR_RENDER_DPI)
     image_bytes = pix.tobytes("png")
 

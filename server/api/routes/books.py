@@ -24,21 +24,21 @@ async def upload_book(file: UploadFile):
     process_book.delay(book_id, str(pdf_path))
     return UploadResponse(book_id=book_id, status="queued")
 
-@router.get(f"/{book_id}", response_model=StatusResponse)
+@router.get("/{book_id}", response_model=StatusResponse)
 async def get_status(book_id: str):
     status_file = get_book_dir(book_id) / "status.json"
     if not status_file.exists():
         raise HTTPException(404, "Book not found")
     return json.loads(status_file.read_text())
 
-@router.get(f"/{book_id}/manifest")
+@router.get("/{book_id}/manifest")
 async def get_manifest(book_id: str):
     manifest_file = get_book_dir(book_id) / "manifest.json"
     if not manifest_file.exists():
         raise HTTPException(404, "Manifest not ready")
     return json.loads(manifest_file.reas_text())
 
-@router.get(f"/{book_id}/audio/{audio_filename}")
+@router.get("/{book_id}/audio/{audio_filename}")
 async def get_audio(book_id: str, audio_filename: str):
     path = get_book_dir(book_id) / audio_filename
     if not path.exists():
