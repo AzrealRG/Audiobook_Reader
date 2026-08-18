@@ -6,6 +6,7 @@ celery_app = Celery(
     "audiobook_reader",
     broker=settings.redis_url,
     backend=settings.redis_url,
+    include=["server.workers.tasks"],
 )
 
 celery_app.conf.update(
@@ -15,5 +16,3 @@ celery_app.conf.update(
     task_track_started=True,
     result_expires=60 * 60 * 24 # lasts a day
 )
-
-celery_app.autodiscover_tasks(["server"])

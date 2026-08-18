@@ -36,7 +36,7 @@ async def get_manifest(book_id: str):
     manifest_file = get_book_dir(book_id) / "manifest.json"
     if not manifest_file.exists():
         raise HTTPException(404, "Manifest not ready")
-    return json.loads(manifest_file.reas_text())
+    return json.loads(manifest_file.read_text())
 
 @router.get("/{book_id}/audio/{audio_filename}")
 async def get_audio(book_id: str, audio_filename: str):
