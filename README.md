@@ -35,10 +35,10 @@ The core document-processing and text-to-speech pipeline is currently being deve
 * Text chunking
 * Google Cloud Text-to-Speech integration
 * End-to-end prototype pipeline testing
+* Image/PDF OCR
 
 ### In Development
 
-* Image/PDF OCR
 * More reliable chapter detection
 * Improved text cleaning
 * AI-generated chapter summaries
@@ -222,7 +222,7 @@ The book's processed chunks can be stored and retrieved through a **RAG (Retriev
 | AI / LLM       | TBD                          |
 | Retrieval      | Vector Database / RAG        |
 | Frontend       | TBD                          |
-| Backend        | TBD                          |
+| Backend        | Celery + Redis + FastAPI     |
 
 ---
 
