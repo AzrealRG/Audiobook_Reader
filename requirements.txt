@@ -10,3 +10,5 @@ redis
 pydantic-settings
 asyncpg
 psycopg[binary]
+sqlalchemy
+alembic
