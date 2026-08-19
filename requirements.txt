@@ -8,3 +8,5 @@ uvicorn[standard]
 celery
 redis
 pydantic-settings
+asyncpg
+psycopg[binary]
