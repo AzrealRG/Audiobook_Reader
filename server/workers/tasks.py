@@ -19,7 +19,7 @@ def process_book(self, book_id:str, pdf_path: str):
     try:
         _write_status(book_dir, "Extracting text")
 
-        text, toc, page_offset, ocr_pages = extract_text_and_toc(pdf_path)
+        text, toc, page_offset = extract_text_and_toc(pdf_path)
         text = clean_text(text)
 
         _write_status(book_dir, "Detecting pages")
@@ -38,7 +38,6 @@ def process_book(self, book_id:str, pdf_path: str):
         _write_status(
             book_dir, "ready",
             total_chapters=len(chapter_list),
-            ocr_pages_used=len(ocr_pages),
         )
         return { "book_id": book_id, "status": "ready" }
 
