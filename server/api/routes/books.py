@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from server.workers.tasks import process_book
 from server.paths import get_book_dir, get_upload_path
-from server.schemas import UploadResponse, StatusResponse, BookResponse
+from server.schemas import UploadResponse, BookResponse
 
 from server.db import get_db
 from server.model import Book
@@ -41,7 +41,7 @@ async def list_books(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Book).order_by(Book.created_at.desc()))
     return result.scalars().all()
 
-@router.get("/{book_id}", response_model=StatusResponse)
+@router.get("/{book_id}", response_model=BookResponse)
 async def get_status(book_id: str):
     status_file = get_book_dir(book_id) / "status.json"
     if not status_file.exists():
