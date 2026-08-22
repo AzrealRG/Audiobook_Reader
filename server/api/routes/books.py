@@ -36,6 +36,11 @@ async def upload_book(file: UploadFile, db: AsyncSession = Depends(get_db)):
     process_book.delay(book_id, str(pdf_path))
     return UploadResponse(book_id=book_id, status="queued")
 
+@router.get("", response_model=list[BookResponse])
+async def list_books(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Book).order_by(Book.created_at.desc()))
+    return result.scalars().all()
+
 @router.get("/{book_id}", response_model=StatusResponse)
 async def get_status(book_id: str):
     status_file = get_book_dir(book_id) / "status.json"
