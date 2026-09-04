@@ -42,11 +42,11 @@ async def list_books(db: AsyncSession = Depends(get_db)):
     return result.scalars().all()
 
 @router.get("/{book_id}", response_model=BookResponse)
-async def get_status(book_id: str):
-    status_file = get_book_dir(book_id) / "status.json"
-    if not status_file.exists():
+async def get_status(book_id: str, db: AsyncSession = Depends(get_db)):
+    book = await db.get(Book, book_id)
+    if book is None:
         raise HTTPException(404, "Book not found")
-    return json.loads(status_file.read_text())
+    return book
 
 @router.get("/{book_id}/manifest")
 async def get_manifest(book_id: str):
