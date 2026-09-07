@@ -25,30 +25,30 @@ def process_book(self, book_id:str, pdf_path: str):
     book_dir = get_book_dir(book_id)
 
     try:
-        _update_book(book_id, "Extracting text")
+        _update_book(book_id, stage="Extracting text")
 
         text, toc, page_offset = extract_text_and_toc(pdf_path)
         text = clean_text(text)
 
-        _update_book(book_id, "Detecting pages")
+        _update_book(book_id, stage="Detecting pages")
         chapter_list = split_into_chapters(text, toc, page_offset)
 
-        _update_book(book_id, "Generating audio", total_chapters=len(chapter_list), completed=0)
+        _update_book(book_id, stage="Generating audio", total_chapters=len(chapter_list), completed=0)
         tts_client = texttospeech.TextToSpeechClient()
         for i, chapter in enumerate(chapter_list):
             synthesize_chapter(tts_client, chapter, book_dir)
             _update_book(
-                book_id, "generating_audio",
+                book_id, stage="generating_audio",
                 total_chapters=len(chapter_list), completed=i + 1,
             )
 
         write_manifest(chapter_list, book_dir)
         _update_book(
-            book_id, "ready",
+            book_id, stage="ready",
             total_chapters=len(chapter_list),
         )
         return { "book_id": book_id, "status": "ready" }
 
     except Exception as e:
-        _update_book(book_id, "failed", error=str(e))
+        _update_book(book_id, stage="failed", error=str(e))
         raise
