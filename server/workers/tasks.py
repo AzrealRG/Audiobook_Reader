@@ -33,13 +33,15 @@ def process_book(self, book_id:str, pdf_path: str):
         _update_book(book_id, stage="Detecting pages")
         chapter_list = split_into_chapters(text, toc, page_offset)
 
-        _update_book(book_id, stage="Generating audio", total_chapters=len(chapter_list), completed=0)
+        _update_book(book_id, stage="Generating audio", total_chapters=len(chapter_list), completed_chapters=0)
         tts_client = texttospeech.TextToSpeechClient()
         for i, chapter in enumerate(chapter_list):
             synthesize_chapter(tts_client, chapter, book_dir)
             _update_book(
-                book_id, stage="generating_audio",
-                total_chapters=len(chapter_list), completed=i + 1,
+                book_id, 
+                stage="Generating audio",
+                total_chapters=len(chapter_list), 
+                completed_chapters=i + 1,
             )
 
         write_manifest(chapter_list, book_dir)
