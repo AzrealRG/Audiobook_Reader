@@ -32,19 +32,17 @@ def extract_text_and_toc(pdf_path: str):
 
     full_text = ""
     page_char_offsets = {} # page_num (0-indexed) -> char offset into full_text
-    ocr_pages = []
     for page_num, page in enumerate(doc):
         page_char_offsets[page_num] = len(full_text)
         page_text = page.get_text()
 
         if len(page_text.strip()) < MIN_CHARS_FOR_DIGITAL_TEXT:
             page_text = ocr_page(page)
-            ocr_pages.append(page_num)
         
         full_text += page_text
     
     doc.close()
-    return full_text, toc, page_char_offsets, ocr_pages
+    return full_text, toc, page_char_offsets
 
 def clean_text(text: str) -> str:
     text = re.sub(r"-\n", "", text) # combine hyphenated line-break words
