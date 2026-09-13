@@ -15,3 +15,14 @@ from server.auth import (
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+@router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+async def signup(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.email == user_in.email))
+    if result.scalar_one_or_none() is not None:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    user = User(email=user_in.email, hashed_password=hash_password(user_in.password))
+    db.add(user)
+    await db.commit()
+    await db.refresh()
+    return user
