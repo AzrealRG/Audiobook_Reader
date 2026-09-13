@@ -70,3 +70,11 @@ async def list_books(book_id: int, current_user: User = Depends(get_current_user
     if book is None:
         raise HTTPException(status_code=404, detail= "Book not found")
     return book
+
+@router.get("/books/{book_id}", response_model=BookResponse)
+async def get_book(book_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Book).where(Book.id == book_id, Book.user_id == current_user.id))
+    book = result.scalar_one_or_none()
+    if book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return book
