@@ -18,7 +18,7 @@ from server.auth import get_current_user
 router = APIRouter(prefix="/books", tags=["books"])
 
 @router.post("", response_model=UploadResponse)
-async def upload_book(file: UploadFile, db: AsyncSession = Depends(get_db)):
+async def upload_book(file: UploadFile, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(400, "Only PDF files are supported right now.")
     
@@ -27,12 +27,16 @@ async def upload_book(file: UploadFile, db: AsyncSession = Depends(get_db)):
     with open(pdf_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
     
-    db.add(Book(
+    book = Book(
         id=book_id,
         original_filename=file.filename,
-        stage="queued"
-    ))
+        stage="queued",
+        user_id=current_user.id
+    )
+
+    db.add(book)
     await db.commit()
+    await db.refresh(book)
 
     process_book.delay(book_id, str(pdf_path))
     return UploadResponse(book_id=book_id, status="queued")

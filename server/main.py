@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from server.api.routes import books
+from server.api.routes import auth as auth_router
 
 app = FastAPI(title="Audiobook Reader")
 
@@ -14,3 +15,4 @@ app.add_middleware(
 )
 
 app.include_router(books.router)
+app.include_router(auth_router.router)
