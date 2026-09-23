@@ -24,7 +24,7 @@ async def signup(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     user = User(email=user_in.email, hashed_password=hash_password(user_in.password))
     db.add(user)
     await db.commit()
-    await db.refresh()
+    await db.refresh(user)
     return user
 
 @router.post("/login", response_model=Token)
