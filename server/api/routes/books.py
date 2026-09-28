@@ -68,15 +68,15 @@ async def get_audio(book_id: str, audio_filename: str):
     return FileResponse(path, media_type="audio/mpeg")
 
 @router.get("/books", response_model=list[BookResponse])
-async def list_books(book_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def list_books(book_id: str, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Book).where(Book.id == book_id, Book.user_id == current_user.id))
-    book = result.scalar_one_or_none()
-    if book is None:
+    books = result.scalar_one_or_none()
+    if books is None:
         raise HTTPException(status_code=404, detail= "Book not found")
-    return book
+    return books
 
 @router.get("/books/{book_id}", response_model=BookResponse)
-async def get_book(book_id: int, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def get_book(book_id: str, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Book).where(Book.id == book_id, Book.user_id == current_user.id))
     book = result.scalar_one_or_none()
     if book is None:
