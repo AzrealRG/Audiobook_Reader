@@ -12,12 +12,13 @@ from server.paths import get_book_dir, get_upload_path
 from server.schemas import UploadResponse, BookResponse
 
 from server.db import get_db
-from server.model import Book
+from server.model import Book, User
+from server.auth import get_current_user
 
 router = APIRouter(prefix="/books", tags=["books"])
 
 @router.post("", response_model=UploadResponse)
-async def upload_book(file: UploadFile, db: AsyncSession = Depends(get_db)):
+async def upload_book(file: UploadFile, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(400, "Only PDF files are supported right now.")
     
@@ -26,26 +27,31 @@ async def upload_book(file: UploadFile, db: AsyncSession = Depends(get_db)):
     with open(pdf_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
     
-    db.add(Book(
+    book = Book(
         id=book_id,
         original_filename=file.filename,
-        stage="queued"
-    ))
+        stage="queued",
+        user_id=current_user.id
+    )
+
+    db.add(book)
     await db.commit()
+    await db.refresh(book)
 
     process_book.delay(book_id, str(pdf_path))
     return UploadResponse(book_id=book_id, status="queued")
 
 @router.get("", response_model=list[BookResponse])
-async def list_books(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Book).order_by(Book.created_at.desc()))
+async def list_books(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    result = await db.execute(select(Book).where(Book.user_id == current_user.id))
     return result.scalars().all()
 
 @router.get("/{book_id}", response_model=BookResponse)
-async def get_status(book_id: str, db: AsyncSession = Depends(get_db)):
-    book = await db.get(Book, book_id)
+async def get_book(book_id: str, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Book).where(Book.id == book_id, Book.user_id == current_user.id))
+    book = result.scalar_one_or_none()
     if book is None:
-        raise HTTPException(404, "Book not found")
+        raise HTTPException(status_code=404, detail="Book not found")
     return book
 
 @router.get("/{book_id}/manifest")
