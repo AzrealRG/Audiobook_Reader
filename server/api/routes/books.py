@@ -42,15 +42,16 @@ async def upload_book(file: UploadFile, current_user: User = Depends(get_current
     return UploadResponse(book_id=book_id, status="queued")
 
 @router.get("", response_model=list[BookResponse])
-async def list_books(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Book).order_by(Book.created_at.desc()))
+async def list_books(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    result = await db.execute(select(Book).where(Book.user_id == current_user.id))
     return result.scalars().all()
 
 @router.get("/{book_id}", response_model=BookResponse)
-async def get_status(book_id: str, db: AsyncSession = Depends(get_db)):
-    book = await db.get(Book, book_id)
+async def get_book(book_id: str, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Book).where(Book.id == book_id, Book.user_id == current_user.id))
+    book = result.scalar_one_or_none()
     if book is None:
-        raise HTTPException(404, "Book not found")
+        raise HTTPException(status_code=404, detail="Book not found")
     return book
 
 @router.get("/{book_id}/manifest")
@@ -66,19 +67,3 @@ async def get_audio(book_id: str, audio_filename: str):
     if not path.exists():
         raise HTTPException(404, "Audio file not ready")
     return FileResponse(path, media_type="audio/mpeg")
-
-@router.get("/books", response_model=list[BookResponse])
-async def list_books(book_id: str, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Book).where(Book.id == book_id, Book.user_id == current_user.id))
-    books = result.scalar_one_or_none()
-    if books is None:
-        raise HTTPException(status_code=404, detail= "Book not found")
-    return books
-
-@router.get("/books/{book_id}", response_model=BookResponse)
-async def get_book(book_id: str, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Book).where(Book.id == book_id, Book.user_id == current_user.id))
-    book = result.scalar_one_or_none()
-    if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
-    return book
