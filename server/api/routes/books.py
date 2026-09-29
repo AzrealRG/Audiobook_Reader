@@ -30,6 +30,7 @@ async def upload_book(file: UploadFile, current_user: User = Depends(get_current
     book = Book(
         id=book_id,
         original_filename=file.filename,
+        title=file.filename,
         stage="queued",
         user_id=current_user.id
     )
