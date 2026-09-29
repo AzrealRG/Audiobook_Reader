@@ -54,6 +54,17 @@ async def get_book(book_id: str, current_user: User = Depends(get_current_user),
         raise HTTPException(status_code=404, detail="Book not found")
     return book
 
+@router.delete("/{book_id}", response_model=BookResponse)
+async def delete_book(book_id: str, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Book).where(Book.id == book_id, Book.user_id == current_user.id))
+    book = result.scalar_one_or_none()
+    if book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+    await db.delete(book)
+    await db.commit()
+
+    return book
+
 @router.get("/{book_id}/manifest")
 async def get_manifest(book_id: str):
     manifest_file = get_book_dir(book_id) / "manifest.json"
