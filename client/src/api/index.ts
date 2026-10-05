@@ -32,5 +32,8 @@ export const api = {
         const form = new FormData()
         form.append('file', file)
         return request('/books', token, { method: 'POST', body: form })
-    }
+    },
+
+    deleteBook: (token: string, id: string): Promise<unknown> =>
+        USE_MOCK ? mock.deleteBook(id) : request(`/books/${id}`, token, { method: 'DELETE' }),
 }
