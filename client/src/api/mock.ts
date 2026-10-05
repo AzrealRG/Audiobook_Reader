@@ -20,3 +20,28 @@ function tick() {
         return b
     })
 }
+
+export const mock = {
+    async signup(email: string, password: string): Promise<User> {
+        await wait()
+        if (password.length < 8) throw new Error('Password must be at least 8 characters')
+        return { id: 1, email, created_at: now() }
+    },
+    async login(email: string, password: string): Promise<Token> {
+        await wait()
+        if (password.length < 8) throw new Error('Incorrect email or password')
+        return { access_token: 'mock-' + email, token_type: 'bearer' }
+    },
+    async me(token: string): Promise<User> {
+        await wait(150)
+        return { id: 1, email: token.replace('mock-', ''), created_at: now() }
+    },
+    async listBooks(): Promise<Book[]> { await wait(200); tick(); return [...books] },
+    async uploadBook(file: File) {
+        await wait(600)
+        const id = crypto.randomUUID()
+        books = [{ id, title: file.name, original_filename: file.name, stage: 'queued', total_chapters: null, completed_chapters: null, error: null, created_at: now(), updated_at: now() }, ...books]
+        return { book_id: id, status: 'queued' }
+    },
+    async deleteBook(id: string) { await wait(200); books = books.filter((b) => b.id !== id) },
+}
