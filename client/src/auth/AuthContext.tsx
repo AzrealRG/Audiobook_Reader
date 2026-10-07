@@ -13,3 +13,31 @@ interface AuthState {
 
 const Ctx = createContext<AuthState | null>(null)
 const KEY = 'audiobook_token'
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+    const [token, setToken] = useState<string | null>(() => localStorage.getItem(KEY))
+    const [user, setUser] = useState<User | null>(null)
+    const [loading, setLoading] = useState(!!token)
+
+    useEffect(() => {
+        if (!token) { setUser(null); setLoading(false); return }
+        api.me(token).then(setUser).catch(() => logout()).finally(() => setLoading(false))
+    }, [token])
+
+    async function login(email: string, password: string) {
+        const t = await api.login(email, password)
+        localStorage.setItem(KEY, t.access_token)
+        setToken(t.access_token)
+    }
+    async function signup(email: string, password: string) {
+        await api.signup(email, password)
+        await login(email, password)
+    }
+    function logout() {
+        localStorage.removeItem(KEY)
+        setToken(null)
+        setUser(null)
+    }
+    
+    return <Ctx.Provider value={{ token, user, loading, login, signup, logout }}>{children}</Ctx.Provider>
+}
