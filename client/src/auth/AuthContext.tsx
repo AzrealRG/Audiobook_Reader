@@ -41,3 +41,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     return <Ctx.Provider value={{ token, user, loading, login, signup, logout }}>{children}</Ctx.Provider>
 }
+
+export function useAuth() { 
+    const ctx = useContext(Ctx) 
+    if (!ctx) throw new Error('useAuth must be inside AuthProvider')
+    return ctx
+}
