@@ -1,4 +1,4 @@
-import type { Book, Token, User } from '../types'
+import type { Book, Manifest, Token, User } from '../types'
 import { mock } from './mock'
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
@@ -16,6 +16,11 @@ async function request<T>(path: string, token: string | null, init: RequestInit 
 }
 
 export const api = {
+    getBook: (token: string, id: string): Promise<Book> => (USE_MOCK ? mock.getBook(id) : request(`/books/${id}`, token)),
+
+    getManifest: (token: string, id: string): Promise<Manifest> => 
+        USE_MOCK ? mock.audioUrl(file) : `${Base}/books/${id}/audio/${encodeURIComponent(file)}`,
+
     signup: (email: string, password: string): Promise<User> =>
         USE_MOCK ? mock.signup(email, password) 
             : request('/auth/signup', null, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) }),
