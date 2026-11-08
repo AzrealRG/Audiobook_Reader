@@ -19,7 +19,10 @@ export const api = {
     getBook: (token: string, id: string): Promise<Book> => (USE_MOCK ? mock.getBook(id) : request(`/books/${id}`, token)),
 
     getManifest: (token: string, id: string): Promise<Manifest> => 
-        USE_MOCK ? mock.audioUrl(file) : `${Base}/books/${id}/audio/${encodeURIComponent(file)}`,
+        USE_MOCK ? mock.getManifest() : request(`/books/${id}/manifest`, token),
+
+    audioUrl: (id: string, file: string): string => 
+        USE_MOCK ? mock.audioUrl(file) : `${BASE}/books/${id}/audio/${encodeURIComponent(file)}`,
 
     signup: (email: string, password: string): Promise<User> =>
         USE_MOCK ? mock.signup(email, password) 
